@@ -1,0 +1,19 @@
+{% extends "__base.html" %}
+
+{% block extra_css %}
+<style>
+#root-content {
+    height: 100%;
+}
+</style>
+{% endblock %}
+
+{% block vue_content %}
+{% endblock %}
+
+{% block content %}
+    Burrito will be served here...
+
+    <iframe src="http://localhost:4000/{{burrito.source}}"
+        style="border:none; width:100%; height: 100%"></iframe>
+{% endblock %}

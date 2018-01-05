@@ -1,0 +1,96 @@
+{% extends "__base.html" %}
+
+{% block vue_content %}
+<script>
+var apis = {
+  'generator': 'http://localhost:3000',
+  'static_server': 'http://localhost:4000'
+};
+
+var app = new Vue({
+  el: '#vue-app',
+  delimiters: ['[[', ']]'],
+  data: {
+    loading: false,
+    url: 'http://phantomjs.org/quick-start.html',
+    hello: 'hello'
+  },
+  methods: {
+    url_submit: function() {
+      url = this.url
+
+      this.loading = true;
+      this.$http.get(apis.generator,
+        {
+          params: {
+            url: encodeURIComponent(this.url)
+          }
+        }
+      ).then(
+            function(response){
+                console.log(response.body);
+
+                var formData = new FormData();
+                formData.append('url', encodeURIComponent(url));
+                formData.append('thumbnail', response.body.thumbnail);
+                formData.append('source', response.body.html);
+
+                this.$http.post('/burrito', formData).then(function(response){
+                  var burrito_id = response.body.id;
+                  setTimeout(function(){
+                    window.location.replace('/banner-builder?id=' + burrito_id)
+                  }, 8000);
+                })
+            },
+            function(error) {
+              console.log("Error happened: " + error);
+            }
+        );
+    }
+  }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+    <div id="vue-app" class="ui grid" style="margin-top: 50px;">
+        <div class="row"></div>
+
+        <div class="row">
+            <div class="two wide column"></div>
+            <div class="twelve wide column">
+                <div v-if="loading">Loading from [[ url ]]</div>
+                <div v-else class="ui action input massive" style="width: 100%">
+                    <input type="text" placeholder="Enter URL" name="url" v-model="url">
+                    <button class="ui button primary" v-on:click="url_submit">Generate</button>
+                </div>
+            </div>
+            <div class="two wide column"></div>
+        </div>
+
+        <div class="row">
+            <div class="two wide column"></div>
+            <div class="twelve wide column" style="margin-left: 10px; margin-top: -24px; color: #aaaaaa; ">
+                Example: https://money.cnn.com/2017/12/30/technology/apple-iphone-battery-available/index.html
+            </div>
+        </div>
+    </div>
+
+    <div class="ui grid" style="margin-top: 100px;">
+        <div class="two wide column"></div>
+        <div class="twelve wide column">
+            <div class="ui secondary pointing menu">
+                <a class="item active">
+                    Use Cases
+                </a>
+                <a class="item">
+                    Examples
+                </a>
+            </div>
+            <div class="ui vertical segment" style="padding-left:10px; padding-top: 5px;">
+                Something
+            </div>
+        </div>
+        <div class="two wide column"></div>
+    </div>
+{% endblock %}

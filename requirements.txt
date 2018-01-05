@@ -1,0 +1,4 @@
+Django==1.11.3
+django-extensions==1.8.1
+ipdb==0.10.3
+jsonfield==2.0.2
