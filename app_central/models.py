@@ -21,6 +21,6 @@ class Burrito(TimeStampedMixin):
 
     banner_url = models.TextField(null=True)    # banner click-thru URL
     banner_message = models.TextField()
-    banner_color_scheme = JSONField()
+    banner_color_scheme = JSONField(default={})
 
     stage = models.TextField()
