@@ -10,6 +10,9 @@
         width:100%;
         height: 100%;
     }
+    #full-content {
+        height: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -17,6 +20,19 @@
 {% endblock %}
 
 {% block content %}
-    Burrito will be served here...
-    <iframe id="content-iframe" src="http://localhost:4000/{{burrito.source}}"></iframe>
+    <div id="full-content" class="ui one column padded grid">
+        <a href="{{ burrito.banner_url }}" class="column" target="_blank"
+           style="font-size: 18px; background-color: {{ burrito.banner_color_scheme.sc1 }}; color: {{ burrito.banner_color_scheme.fg  }};">
+            <div class="ui center aligned one column grid">
+                <div class="stretched row">
+                    <div class="column">
+                        <div class="ui"></div>
+                        <div class="ui">{{ burrito.banner_message }}</div>
+                        <div class="ui"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        <iframe id="content-iframe" class="column" style="padding:0;" id="content-iframe" src="http://localhost:4000/{{burrito.source}}"></iframe>
+    </div>
 {% endblock %}
