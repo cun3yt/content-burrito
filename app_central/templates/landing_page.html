@@ -1,0 +1,189 @@
+{% extends "__base.html" %}
+
+{% block header %}
+    <!-- Following Menu -->
+    <div class="ui large top fixed hidden menu">
+        <div class="ui container">
+            <a class="item"><img src="/static/logo.png" style="width:180px;"></a>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <div class="ui vertical inverted sidebar menu">
+        <a class="item"><img src="/static/logo.png" style="width:180px;"></a>
+        <a class="item">Get Into Beta Program</a>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <!-- Page Contents -->
+    <div class="pusher">
+        <div class="ui inverted vertical masthead center aligned segment" style="background-image: url(/static/screen.jpg); background-position: center; background-size: auto 100%; background-repeat: no-repeat;">
+
+            <div class="ui container">
+                <div class="ui large secondary inverted pointing menu">
+                    <a class="toc item">
+                        <i class="sidebar icon"></i>
+                    </a>
+                    <a class="item"><img src="/static/logo.png" style="width:180px;"></a>
+                </div>
+            </div>
+
+            <div class="ui text container">
+                <h1 class="ui inverted header">
+                    Contentty
+                </h1>
+                <h2>Web is full of proof for your business. Take advantage of it.</h2>
+                <div id="scroll-to-meat" class="ui button">Learn How<i class="down arrow icon" style="margin-left: 12px; margin-right: 0;"></i></div>
+            </div>
+        </div>
+
+        <div id="content-meat-1" class="ui vertical stripe segment" style="padding: 6em 0;">
+            <div class="ui middle aligned stackable grid container">
+                <div class="row">
+                    <div class="nine wide column">
+                        <h3 class="ui header">Build Clickable Banners on Credible Content</h3>
+                        <p>You share content on the web all the time. Maybe it is news about your product or
+                            the industry in which your business is. It is time to take the full advantage of what you
+                            share with a Contentty banner.</p>
+                        <h3 class="ui header" style="margin-top: 20px;">Every Link Needs Context</h3>
+                        <p>Your audience needs context to be convinced and the context comes from the website
+                            associated with your offering. The more credible the website source is, the more likely
+                            your link will get clicked. So use Contentty for...
+                            <ul style="font-size: 18px; line-height: 24px;">
+                                <li>Driving traffic within news context</li>
+                                <li>Selling products</li>
+                                <li>Affiliate marketing</li>
+                                <li>Giving message in specific context</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="seven wide right floated column">
+                        <img src="/static/case.jpg" class="ui large bordered rounded image" style="width:auto">
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="request-your-spot-1" class="center aligned column">
+                        <a class="ui huge primary button" style="line-height: 27px;" v-on:click="turn_form_visible()" v-if="!is_form_visible">Sign up For Our Beta</a>
+
+                        <div class="twelve wide column" v-if="is_form_visible">
+                            <div class="ui action input massive" >
+                                <form v-if="!(is_thanking || is_loading)" ref="emailSubmit" v-on:submit.prevent="onSubmit" data-subscribe-url="{% url 'beta-subscribe' %}">
+                                    <input type="hidden" name="csrfmiddlewaretoken" v-model="csrf_token">
+                                    <input type="email" name="email" ref="email" placeholder="Your Email Address" v-model="email">
+                                    <button class="ui button primary" v-on:click="form_submit()">Submit</button>
+                                </form>
+                                <span v-if="is_thanking">Thank you, we'll email you once the beta is available for you (we are working hard).</span>
+                                <span v-if="error_msg">[[error_msg]]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui vertical stripe segment" style="padding: 4em 0;">
+            <div class="ui text container one column grid">
+                <h3 class="ui header">How It Works</h3>
+                <p class="row" style="margin-bottom: 0;">
+                    <b>1. Tell The Link to Contentty:</b>
+                    You find an article that can pair with your link or offering. The article is maybe about a product
+                    that you sell or complimentary news about your business. Enter its link to Contentty.
+                </p>
+                <div class="row">
+                    <div class="column">
+                        <img src="/static/case-ss-only.jpg">
+                    </div>
+                </div>
+                <p class="row" style="margin-bottom: 0;">
+                    <b>2. Set Your Message and Link on Your Banner:</b>
+                    Put the direct link to a product that is mentioned in the article or put your website link.
+                </p>
+                <div class="row">
+                    <div class="column">
+                        <img src="/static/banner.jpg">
+                    </div>
+                </div>
+                <p class="row" style="margin-bottom: 0;">
+                    <b>3. Share Your Contentty Link:</b>
+                    Share the enriched link with your already established community and followers.
+                </p>
+                <div class="row">
+                    <div class="column">
+                        <img src="/static/share.jpg">
+                    </div>
+                </div>
+                <p class="row" style="margin-bottom: 0;">
+                    <b>4. Enjoy the Traffic from Credible Article Context</b>
+                </p>
+                <div class="row">
+                    <div class="column">
+                        <img src="/static/clicks.jpg">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="center aligned column">
+                        <a class="ui huge primary button" style="line-height: 27px;">Sign up For Our Beta</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui inverted vertical footer segment">
+            <div class="ui container">
+                <div class="ui stackable inverted divided equal height stackable grid">
+                    <div class="seven wide column">
+                        <h4 class="ui inverted"><a href="https://twitter.com/contentty_web">Follow us on Twitter</a></h4>
+                        <h4 class="ui inverted header">Copyright © 2018 Contentty</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block vue_content %}
+    <script>
+      var app = new Vue({
+        el: '#request-your-spot-1',
+        delimiters: ['[[', ']]'],
+        data: {
+          'is_form_visible': false,
+          'is_loading': false,
+          'is_thanking': false,
+          'email': '',
+          'csrf_token': '{{ csrf_token }}',
+          'error_msg': ''
+        },
+        methods: {
+          turn_form_visible: function() {
+            this.is_form_visible = true;
+            this.$nextTick(function() {
+                this.$refs.email.focus();
+            });
+          },
+          form_submit: function() {
+            this.is_loading = true;
+
+            var submit_url = this.$refs.emailSubmit.dataset.subscribeUrl;
+
+            var formData = new FormData();
+            formData.append('csrfmiddlewaretoken', this.csrf_token);
+            formData.append('email', this.email);
+
+            var that = this;
+
+            this.$http.post(submit_url, formData).then(function(response){
+              that.is_thanking = true;
+              that.is_loading = false;
+            }, function(err_response){
+              that.error_msg = 'An error happened, please try again.';
+              that.is_loading = false;
+            });
+          }
+        }
+      });
+    </script>
+{% endblock %}

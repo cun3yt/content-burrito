@@ -11,6 +11,8 @@ urlpatterns = [
     url(r'^signup/$', views.signup, name='signup'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
-    url(r'^b', views.serve_burrito, name='burrito'),
+    url(r'^beta-subscribe$', views.beta_subscribe, name='beta-subscribe'),
+    url(r'^b$', views.serve_burrito, name='burrito'),
+    url(r'^landing-page$', views.landing_page, name='landing-page'),
     url(r'^$', views.index, name='index'),
 ]

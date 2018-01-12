@@ -4,12 +4,59 @@ from django.contrib.auth import login, authenticate
 from django.http import JsonResponse
 from django.db import transaction
 from django.contrib.auth.decorators import login_required
-from .models import Burrito
+from django.middleware.csrf import get_token
+from .models import Burrito, BetaSubscriber
 from .forms import SignupForm, LoginForm
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from ipware.ip import get_real_ip
+from django.db import IntegrityError
 
-@csrf_exempt
+import logging
+import daiquiri
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger()
+
+
 def index(request):
+    if not request.COOKIES.get('pass_lp', False):
+        return render(request, 'landing_page.html', context={'csrf_token': get_token(request)})
+
     return render(request, 'home.html', context={})
+
+
+def beta_subscribe(request):
+    ip = get_real_ip(request)
+
+    if not (request.method == "POST"):
+        error_msg = "Wrong HTTP Method"
+        logger.info("{error_msg} for IP: {ip}".format(error_msg=error_msg, ip=ip))
+        response = JsonResponse({"result": "error", "error_message": error_msg})
+        response.status_code = 405
+        return response
+
+    email = request.POST.get('email')
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        error_msg = "Email address is malformed. Please try a valid address"
+        logger.info("{error_msg} for IP: {ip}, Email: {email}".format(error_msg=error_msg, ip=ip, email=email))
+        response = JsonResponse({"result": "error", "error_message": error_msg})
+        response.status_code = 400
+        return response
+
+    try:
+        subscriber = BetaSubscriber(email=email, ip=ip)
+        subscriber.save()
+        logger.info("Successful save for IP: {ip}, email: {email}".format(ip=ip, email=email))
+    except IntegrityError:
+        logger.info("Integrity Error for Beta Subscriber IP: {ip}, Email: {email}".format(ip=ip, email=email))
+
+    response = JsonResponse({"result": "success"})
+    response.status_code = 200
+    return response
 
 
 def banner_builder(request):
@@ -116,3 +163,7 @@ def login_view(request):
     # ipdb.set_trace()
 
     return render(request, 'login.html', context=context)
+
+
+def landing_page(request):
+    return render(request, 'landing_page.html')

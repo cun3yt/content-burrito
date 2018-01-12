@@ -73,3 +73,11 @@ class Burrito(TimeStampedMixin):
     banner_color_scheme = JSONField(default={})
 
     stage = models.TextField()
+
+
+class BetaSubscriber(TimeStampedMixin):
+    class Meta:
+        db_table = 'beta_subscriber'
+
+    email = models.EmailField(_('email address'), unique=True)
+    ip = models.TextField(null=True, blank=True)
