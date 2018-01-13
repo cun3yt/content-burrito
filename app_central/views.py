@@ -12,6 +12,7 @@ from django.core.exceptions import ValidationError
 from ipware.ip import get_real_ip
 from django.db import IntegrityError
 
+import os
 import logging
 import daiquiri
 
@@ -21,9 +22,13 @@ logger = daiquiri.getLogger()
 
 def index(request):
     if not request.COOKIES.get('pass_lp', False):
-        return render(request, 'landing_page.html', context={'csrf_token': get_token(request)})
+        return render(request, 'landing_page.html',
+                      context={
+                          'csrf_token': get_token(request),
+                          'is_prod': (os.environ.get('ENV') == 'prod')
+                      })
 
-    return render(request, 'home.html', context={})
+    return render(request, 'home.html')
 
 
 def beta_subscribe(request):
