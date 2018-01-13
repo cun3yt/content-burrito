@@ -1,2 +1,2 @@
 release: bash ./heroku_deploy.sh
-web: gunicorn ears.wsgi --log-file -
+web: gunicorn content_burrito.wsgi --log-file -
