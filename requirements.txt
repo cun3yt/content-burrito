@@ -4,3 +4,5 @@ ipdb==0.10.3
 jsonfield==2.0.2
 django-ipware==1.1.6
 daiquiri==1.2.2
+gunicorn==19.7.1
+dj-database-url==0.4.2
