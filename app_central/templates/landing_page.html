@@ -18,7 +18,7 @@
 
 {% block content %}
     <!-- Page Contents -->
-    <div class="pusher">
+    <div id="request-your-spot" class="pusher">
         <div class="ui inverted vertical masthead center aligned segment" style="background-image: url(/static/screen.jpg); background-position: center; background-size: auto 100%; background-repeat: no-repeat;">
 
             <div class="ui container">
@@ -64,21 +64,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div id="request-your-spot-1" class="center aligned column">
-                        <a class="ui huge primary button" style="line-height: 27px;" v-on:click="turn_form_visible()" v-if="!is_form_visible">Sign up For Our Beta</a>
-
-                        <div class="twelve wide column" v-if="is_form_visible">
-                            <div class="ui action input massive" >
-                                <form v-if="!(is_thanking || is_loading)" ref="emailSubmit" v-on:submit.prevent="onSubmit" data-subscribe-url="{% url 'beta-subscribe' %}">
-                                    <input type="hidden" name="csrfmiddlewaretoken" v-model="csrf_token">
-                                    <input type="email" name="email" ref="email" placeholder="Your Email Address" v-model="email">
-                                    <button class="ui button primary" v-on:click="form_submit()">Submit</button>
-                                </form>
-                                <span v-if="is_thanking">Thank you, we'll email you once the beta is available for you (we are working hard).</span>
-                                <span v-if="error_msg">[[error_msg]]</span>
-                            </div>
-                        </div>
-                    </div>
+                    <subscribe-form></subscribe-form>
                 </div>
             </div>
         </div>
@@ -124,7 +110,7 @@
                 </div>
                 <div class="row">
                     <div class="center aligned column">
-                        <a class="ui huge primary button" style="line-height: 27px;">Sign up For Our Beta</a>
+                        <subscribe-form></subscribe-form>
                     </div>
                 </div>
             </div>
@@ -146,44 +132,62 @@
 
 {% block vue_content %}
     <script>
-      var app = new Vue({
-        el: '#request-your-spot-1',
-        delimiters: ['[[', ']]'],
-        data: {
-          'is_form_visible': false,
-          'is_loading': false,
-          'is_thanking': false,
-          'email': '',
-          'csrf_token': '{{ csrf_token }}',
-          'error_msg': ''
-        },
-        methods: {
-          turn_form_visible: function() {
-            this.is_form_visible = true;
-            this.$nextTick(function() {
+        data = {
+            is_form_visible: false,
+            is_loading: false,
+            is_thanking: false,
+            email: '',
+            csrf_token: '{{ csrf_token }}',
+            error_msg: '',
+            subscribe_url: "{% url 'beta-subscribe' %}"
+        };
+
+        Vue.component('subscribe-form', {
+          template: '<div class="center aligned column"><a class="ui huge primary button" style="line-height: 27px;" v-on:click="turn_form_visible()" v-if="!is_form_visible">Sign up For Our Beta</a>\n' +
+          '\n' +
+          '                        <div class="twelve wide column" v-if="is_form_visible">\n' +
+          '                            <div class="ui row action input massive" >\n' +
+          '                                <form v-if="!(is_thanking || is_loading)" v-on:submit.prevent>\n' +
+          '                                    <input type="hidden" name="csrfmiddlewaretoken" v-model="csrf_token">\n' +
+          '                                    <input type="email" name="email" ref="email" placeholder="Your Email Address" v-model="email">\n' +
+          '                                    <button class="ui button primary" v-on:click="form_submit()">Submit</button>\n' +
+          '                                </form>\n' +
+          '                            </div>\n' +
+          '                            <div class="ui row" v-if="is_thanking"><h1>Thank you, we\'ll email you once the beta is available for you.</h1></div>\n' +
+          '                            <div class="ui row" v-if="error_msg && !is_thanking" style="color:red">[[error_msg]]</div>\n' +
+          '                        </div></div>',
+          delimiters: ['[[', ']]'],
+          data: function() { return data },
+          methods: {
+            turn_form_visible: function() {
+              this.is_form_visible = true;
+              this.$nextTick(function() {
                 this.$refs.email.focus();
-            });
-          },
-          form_submit: function() {
-            this.is_loading = true;
+              });
+            },
+            form_submit: function() {
+              this.is_loading = true;
 
-            var submit_url = this.$refs.emailSubmit.dataset.subscribeUrl;
+              var formData = new FormData();
+              formData.append('csrfmiddlewaretoken', this.csrf_token);
+              formData.append('email', this.email);
 
-            var formData = new FormData();
-            formData.append('csrfmiddlewaretoken', this.csrf_token);
-            formData.append('email', this.email);
+              var that = this;
 
-            var that = this;
-
-            this.$http.post(submit_url, formData).then(function(response){
-              that.is_thanking = true;
-              that.is_loading = false;
-            }, function(err_response){
-              that.error_msg = 'An error happened, please try again.';
-              that.is_loading = false;
-            });
+              this.$http.post(this.subscribe_url, formData).then(function(response){
+                that.is_thanking = true;
+                that.is_loading = false;
+              }, function(err_response){
+                that.error_msg = 'An error happened, please try again.';
+                that.is_loading = false;
+              });
+            }
           }
-        }
+        })
+
+      var app = new Vue({
+        el: '#request-your-spot',
+        delimiters: ['[[', ']]'],
       });
     </script>
 {% endblock %}
