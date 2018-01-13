@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 import dj_database_url
+import daiquiri
+import logging
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,11 +31,12 @@ ENV = os.environ.get('ENV')
 SECRET_KEY = os.environ.get('ENV_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True # (ENV == 'dev')
+DEBUG = (ENV == 'dev')
 
 ALLOWED_HOSTS = [
     'localhost',
     '.herokuapp.com',
+    'www.contentty.com',
 ]
 
 
@@ -137,3 +143,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
+
+logger.debug("BASE_DIR: {}".format(BASE_DIR))
+logger.debug("PROJECT_ROOT: {}".format(PROJECT_ROOT))
+logger.debug("STATIC_ROOT: {}".format(STATIC_ROOT))
+logger.debug("STATIC_URL: {}".format(STATIC_URL))
+logger.debug("STATICFILES_DIRS: {}".format(', '.join(STATICFILES_DIRS)))
