@@ -2,29 +2,56 @@
 <html lang="en">
 <head>
     {% load static %}
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
     <title>{% block title %}Content Burrito{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.2.13/dist/semantic.min.css">
     <link rel="stylesheet" href="{% static 'main.css' %}">
     {% block extra_css %}{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2/semantic.min.js"></script>
     <script src="{% static 'vue.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+    <script>
+      $(document).ready(function() {
+          // fix menu when passed
+          $('.masthead')
+            .visibility({
+              once: false,
+              onBottomPassed: function() {
+                $('.fixed.menu').transition('fade in');
+              },
+              onBottomPassedReverse: function() {
+                $('.fixed.menu').transition('fade out');
+              }
+            });
+
+          // create sidebar and attach to menu open
+          $('.ui.sidebar').sidebar('attach events', '.toc.item');
+
+            $("#scroll-to-meat").on('click', function(){
+              $('html, body').animate({
+                scrollTop: $("#content-meat-1").offset().top
+              }, 800);
+            });
+        });
+    </script>
+
+    {% block additional_head %}
+    {% endblock %}
 </head>
 
 <body>
-<div id="header">
-    {% block header %}{% endblock %}
-</div>
+{% block header %}{% endblock %}
 
-<div id="root-content">
-    {% block content %}{% endblock %}
-</div>
+{% block content %}{% endblock %}
 
-{% block js %}
-<script
-        src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-        crossorigin="anonymous"></script>
-{% endblock %}
+{% block js %}{% endblock %}
 {% block vue_content %}{% endblock %}
 </body>
 </html>

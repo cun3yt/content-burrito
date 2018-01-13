@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import dj_database_url
+import daiquiri
+import logging
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,13 +25,19 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
+ENV = os.environ.get('ENV')
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '0ol9vjrh1bt+)a6axql5t3zjon9%p6bnhl5ad5tqf9m_yvjmya'
+SECRET_KEY = os.environ.get('ENV_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (ENV == 'dev')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '.herokuapp.com',
+    'www.contentty.com',
+]
 
 
 # Application definition
@@ -41,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,11 +88,17 @@ WSGI_APPLICATION = 'content_burrito.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'default': {}
+}
+
+if ENV == 'prod':
+    db_from_env = dj_database_url.config(conn_max_age=600)
+    DATABASES['default'].update(db_from_env)
+else:
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-}
 
 
 # Password validation
@@ -100,6 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'app_central.User'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
@@ -114,7 +135,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -124,3 +144,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(PROJECT_ROOT, 'static'),
 )
+
+logger.debug("BASE_DIR: {}".format(BASE_DIR))
+logger.debug("PROJECT_ROOT: {}".format(PROJECT_ROOT))
+logger.debug("STATIC_ROOT: {}".format(STATIC_ROOT))
+logger.debug("STATIC_URL: {}".format(STATIC_URL))
+logger.debug("STATICFILES_DIRS: {}".format(', '.join(STATICFILES_DIRS)))
